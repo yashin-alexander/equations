@@ -8,12 +8,12 @@ namespace {
     constexpr const char * SIGNED_INT_REGEX_PATTERN {"[-]?[0-9]+"};
 }
 
-bool ArgumentParser::parse(std::vector<TaskSquared>& tasks) const {
+bool ArgumentParser::parse(std::vector<QuadraticTask>& tasks) const {
     if (!arguments_are_valid()) {
         std::cout << "Input parameters are invalid!" << std::endl;
         return false;
     }
-    TaskSquared task{};
+    QuadraticTask task{};
     for (auto it = m_arguments.begin(), ite = m_arguments.end();
               it != ite;
               it += QADRATIC_EQUATION_PARAMETERS_NUMBER) {

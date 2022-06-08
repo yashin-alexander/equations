@@ -9,7 +9,7 @@
 class ArgumentParser {
 public:
     explicit ArgumentParser(const std::vector<std::string>& arguments) : m_arguments(arguments) {};
-    bool parse(std::vector<TaskSquared>& tasks) const;
+    bool parse(std::vector<QuadraticTask>& tasks) const;
 private:
     const std::vector<std::string>& m_arguments;
     static bool string_to_int(const std::string& src_string, int& dst_int);
