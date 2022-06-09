@@ -8,7 +8,7 @@ namespace {
     constexpr const char * SIGNED_INT_REGEX_PATTERN {"[-]?[0-9]+"};
 }
 
-bool ArgumentParser::parse(std::vector<QuadraticTask>& tasks) const {
+bool ArgumentParser::parse(std::vector<QuadraticTask>* tasks) const {
     if (!arguments_are_valid()) {
         std::cout << "Input parameters are invalid!" << std::endl;
         return false;
@@ -17,10 +17,8 @@ bool ArgumentParser::parse(std::vector<QuadraticTask>& tasks) const {
     for (auto it = m_arguments.begin(), ite = m_arguments.end();
               it != ite;
               it += QADRATIC_EQUATION_PARAMETERS_NUMBER) {
-        if (string_to_int(*it, task.a) &&
-            string_to_int(*(it + 1), task.b) &&
-            string_to_int(*(it + 2), task.c)) {
-            tasks.push_back(task);
+        if (task_from_three_strings(&task, it)) {
+            tasks->push_back(task);
         } else {
             std::cout << "ArgumentParser: unable to process arguments \n";
             return false;
@@ -29,9 +27,15 @@ bool ArgumentParser::parse(std::vector<QuadraticTask>& tasks) const {
     return true;
 }
 
-bool ArgumentParser::string_to_int(const std::string& src_string, int& dst_int) {
+bool ArgumentParser::task_from_three_strings(QuadraticTask* task, const ArgumentsIterator& iterator) {
+    return (ArgumentParser::int_from_string(&task->a, *iterator) &&
+            ArgumentParser::int_from_string(&task->b, *(iterator + 1)) &&
+            ArgumentParser::int_from_string(&task->c, *(iterator + 2)));
+}
+
+bool ArgumentParser::int_from_string(int* dst_int, const std::string& src_string) {
     try {
-        dst_int = std::stoi(src_string);
+        *dst_int = std::stoi(src_string);
     } catch (std::invalid_argument const& ex) {
         std::cout << "ArgumentParser: unable to convert string to int: " << src_string << '\n';
         return false;

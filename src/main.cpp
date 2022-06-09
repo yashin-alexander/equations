@@ -13,7 +13,7 @@ int main(int argc, char **argv)
     std::vector<std::string> arguments(argv + 1, argv + argc);
     std::vector<QuadraticTask> tasks{};
     ArgumentParser parser{arguments};
-    if (!parser.parse(tasks)) {
+    if (!parser.parse(&tasks)) {
         return -1;
     }
 
@@ -23,8 +23,8 @@ int main(int argc, char **argv)
         equation.solve();
         if (equation.is_solved()){
             const QuadraticTaskResults results = equation.get_task_results();
-            std::cout << "\tx1 = " << results.root1.value_or(std::nanf("0")) << '\n';
-            std::cout << "\tx2 = " << results.root2.value_or(std::nanf("0")) << '\n';
+            std::cout << "\tx1 = " << results.root1 << '\n';
+            std::cout << "\tx2 = " << results.root2 << '\n';
             std::cout << "\textremum = " << results.extremum << '\n';
         }
     }

@@ -2,6 +2,8 @@
 
 #include <iostream>
 #include <cmath>
+#include <limits>
+
 
 void LinearEquation::solve() {
     if (!is_solved()){
@@ -10,7 +12,7 @@ void LinearEquation::solve() {
             m_results.root1 = static_cast<double>(-m_task.c) / m_task.b;
         } else {
             // c = y
-            m_results.root1.reset();
+            m_results.root1 = std::numeric_limits<double>::quiet_NaN();
         }
         m_solved = true;
     }
@@ -29,11 +31,12 @@ void QuadraticEquation::solve() {
             calculate_extremum();
         } else {
             // bx + c = 0
-            auto linear_equation = LinearEquation{m_task};
+            LinearTask linear_task{m_task.b, m_task.c};
+            LinearEquation linear_equation{linear_task};
             linear_equation.solve();
             m_results.root1 = linear_equation.get_task_results().root1;
-            m_results.root2.reset();
-            m_results.extremum = std::nan("0");
+            m_results.root2 = std::numeric_limits<double>::quiet_NaN();
+            m_results.extremum = std::numeric_limits<double>::quiet_NaN();
         }
         m_solved = true;
     }
@@ -51,18 +54,17 @@ void QuadraticEquation::calculate_roots() {
         m_results.root1 = -static_cast<double>(m_task.b) / (2 * m_task.a);
         m_results.root2 = m_results.root1;
     } else {
-        m_results.root1.reset();
-        m_results.root2.reset();
+        // No real roots
+        m_results.root1 = std::numeric_limits<double>::quiet_NaN();
+        m_results.root2 = m_results.root1;
     }
 }
 
 void QuadraticEquation::calculate_extremum() {
-    LinearTask task = LinearTask();                             // FIXME!
-    task.b = m_task.a * 2;
-    task.c = m_task.b;
-    auto linear_equation = LinearEquation{task};
+    LinearTask linear_task{m_task.a * 2, m_task.b};
+    auto linear_equation = LinearEquation{linear_task};
     linear_equation.solve();
-    m_results.extremum = linear_equation.get_task_results().root1.value_or(std::nanf("0"));
+    m_results.extremum = linear_equation.get_task_results().root1;
 }
 
 const QuadraticTaskResults& QuadraticEquation::get_task_results() const {

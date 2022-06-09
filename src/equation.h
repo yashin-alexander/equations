@@ -16,9 +16,9 @@ protected:
     bool m_solved{false};
 };
 
-class LinearEquation : public Equation {
+class LinearEquation final : public Equation {
 public:
-    explicit LinearEquation(const LinearTask& task) : m_task(task), m_results() {};
+    explicit LinearEquation(const LinearTask& task) : m_task(task), m_results({}) {};
     void solve() override;
     const LinearTaskResults& get_task_results() const override;
 private:
@@ -26,9 +26,9 @@ private:
     LinearTaskResults m_results;
 };
 
-class QuadraticEquation : public Equation {
+class QuadraticEquation final : public Equation {
 public:
-    explicit QuadraticEquation(const QuadraticTask& task) : m_task(task), m_results() {};
+    explicit QuadraticEquation(const QuadraticTask& task) : m_task(task), m_results({}) {};
     void solve() override;
     const QuadraticTaskResults& get_task_results() const override;
 private:

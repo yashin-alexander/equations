@@ -1,33 +1,33 @@
 #ifndef TASK_H
 #define TASK_H
 
-#include <optional>
+struct Task {}; // EBCO
 
-struct Task {
-    ~Task() = default;
+struct LinearTask final : public Task {
+    int b;
+    int c;
+    LinearTask() = default;
+    LinearTask(int b, int c) : b(b), c(c) {};
 };
 
-struct LinearTask : public Task {
-    int b{};
-    int c{};
+struct QuadraticTask final : public Task {
+    int a;
+    int b;
+    int c;
+    QuadraticTask() = default;
+    QuadraticTask(int a, int b, int c) : a(a), b(b), c(c) {};
 };
 
-struct QuadraticTask : public LinearTask {
-    int a{};
+struct TaskResults {}; // EBCO
+
+struct LinearTaskResults final : TaskResults {
+    double root1;
 };
 
-struct TaskResults {
-    ~TaskResults() = default;
-};
-
-struct LinearTaskResults : TaskResults {
-    std::optional<double> root1{std::nullopt};
-};
-
-struct QuadraticTaskResults : TaskResults {
-    std::optional<double> root1{std::nullopt};
-    std::optional<double> root2{std::nullopt};
-    double extremum{};
+struct QuadraticTaskResults final : TaskResults {
+    double root1;
+    double root2;
+    double extremum;
 };
 
 #endif // TASK_H
