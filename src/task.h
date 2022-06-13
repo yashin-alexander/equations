@@ -1,7 +1,7 @@
 #ifndef TASK_H
 #define TASK_H
 
-struct Task {}; // EBCO
+struct Task {};
 
 struct LinearTask final : public Task {
     int b;
@@ -18,7 +18,7 @@ struct QuadraticTask final : public Task {
     QuadraticTask(int a, int b, int c) : a(a), b(b), c(c) {};
 };
 
-struct TaskResults {}; // EBCO
+struct TaskResults {};
 
 struct LinearTaskResults final : TaskResults {
     double root1;
