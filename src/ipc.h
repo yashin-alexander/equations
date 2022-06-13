@@ -1,6 +1,10 @@
 #ifndef IPC_H
 #define IPC_H
 
+#include "equation.h"
+#include "task.h"
+
+#include <atomic>
 #include <mutex>
 #include <semaphore>
 #include <thread>
@@ -9,19 +13,24 @@
 constexpr unsigned long MIN_DEFAULT_THREADS_NUM {2};
 constexpr unsigned int LEAST_MAX_SEMAPHORE_VALUE {32};
 
-template <typename T, std::ptrdiff_t U>
+template <typename T>
 struct ipc_data_t {
-    std::vector<T> m_buffer;
-    std::counting_semaphore<U> m_number_of_empty_elements;
-    std::counting_semaphore<U> m_number_of_queueing_elements;
-    std::mutex m_buffer_mutex;
+    const unsigned int consumer_threads_number;
+    std::vector<T> buffer;
+    std::counting_semaphore<LEAST_MAX_SEMAPHORE_VALUE> number_of_empty_elements;
+    std::counting_semaphore<LEAST_MAX_SEMAPHORE_VALUE> number_of_queueing_elements;
+    std::mutex buffer_mutex;
+    std::atomic<bool> producer_finished {false};
 
-    ipc_data_t(const unsigned int max_elements_number)
-        : m_buffer({max_elements_number}),
-          m_number_of_empty_elements {max_elements_number},
-          m_number_of_queueing_elements {0},
-          m_buffer_mutex()
-    {}
+    ipc_data_t(const unsigned int consumer_threads_number)
+        : consumer_threads_number(consumer_threads_number),
+          buffer({}),
+          number_of_empty_elements {consumer_threads_number},
+          number_of_queueing_elements {0},
+          buffer_mutex()
+    {
+        buffer.reserve(consumer_threads_number);
+    }
 };
 
 unsigned long const get_threads_number()

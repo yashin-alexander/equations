@@ -5,7 +5,7 @@
 
 namespace {
 constexpr int QADRATIC_EQUATION_PARAMETERS_NUMBER {3};
-constexpr const char *SIGNED_INT_REGEX_PATTERN {"[-]?[0-9]+"};
+constexpr const char *SIGNED_INT_REGEX_PATTERN {"[-]?[0-9]{1,9}"};
 } // namespace
 
 bool ArgumentParser::parse(std::vector<QuadraticTask> *tasks) const
@@ -18,7 +18,7 @@ bool ArgumentParser::parse(std::vector<QuadraticTask> *tasks) const
     for (auto it = m_arguments.begin(), ite = m_arguments.end(); it != ite;
          it += QADRATIC_EQUATION_PARAMETERS_NUMBER) {
         if (task_from_three_strings(&task, it)) {
-            tasks->push_back(task);
+            tasks->emplace_back(task);
         } else {
             std::cout << "ArgumentParser: unable to process arguments \n";
             return false;
@@ -60,7 +60,7 @@ bool ArgumentParser::arguments_types_are_valid() const
     for (const auto &s : m_arguments) {
         if (!std::regex_match(s, signed_int_regex)) {
             std::cout << "ArgumentParser: parameter with incorrect type provided: {" << s << "}"
-                      << std::endl;
+                      << ", please, follow the regex: " << SIGNED_INT_REGEX_PATTERN << std::endl;
             return false;
         }
     }
@@ -77,3 +77,4 @@ bool ArgumentParser::arguments_number_is_valid() const
     }
     return true;
 }
+
