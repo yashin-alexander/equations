@@ -10,7 +10,7 @@
 #include <thread>
 #include <vector>
 
-constexpr unsigned long MIN_DEFAULT_THREADS_NUM {2};
+constexpr unsigned long MIN_DEFAULT_THREADS_NUM {3};
 constexpr unsigned int LEAST_MAX_SEMAPHORE_VALUE {32};
 
 template <typename T>
