@@ -10,15 +10,18 @@
 #include <sstream>
 #include <thread>
 
-/*
- * This code implements Dijkstra's solution of producer-consumer problem with
- * two semaphores for signaling purposes and mutex for buffer exclusive
- * access operations.
- *
- * Also, I've added graceful threads halt check. After finishing it's job
- * Producer will set up atomic variable and then will signalize semaphore
- * without actual data generation. Consumers will find it out and exit.
- */
+//@PURPOSE: Provide a consumer realization for equation-solver app
+//
+//@CLASSES:
+//  Consumer: capable of getting new tasks and managing their execution
+//
+//@DESCRIPTION: This code implements Dijkstra's solution of producer-consumer
+// problem with two semaphores for signaling purposes and mutex for buffer
+// exclusive access operations.
+//
+// Threads halt logic is also added: After finishing it's job
+// Producer will set up atomic variable and then will signalize semaphore
+// without actual data generation. Consumers will find it out and exit.
 
 template <typename T>
 class Consumer
