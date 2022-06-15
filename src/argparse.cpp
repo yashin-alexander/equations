@@ -8,33 +8,30 @@ constexpr int QADRATIC_EQUATION_PARAMETERS_NUMBER {3};
 constexpr const char *SIGNED_INT_REGEX_PATTERN {"[-]?[0-9]{1,9}"};
 } // namespace
 
-bool ArgumentParser::parse(std::vector<QuadraticTask> *tasks) const
+std::optional<QuadraticTask> ArgumentParser::parseNext()
 {
-    if (!arguments_are_valid()) {
-        std::cout << "Input parameters are invalid!" << std::endl;
-        return false;
-    }
-    QuadraticTask task {};
-    for (auto it = m_arguments.begin(), ite = m_arguments.end(); it != ite;
-         it += QADRATIC_EQUATION_PARAMETERS_NUMBER) {
-        if (task_from_three_strings(&task, it)) {
-            tasks->emplace_back(task);
-        } else {
-            std::cout << "ArgumentParser: unable to process arguments \n";
-            return false;
+    while (m_argumets_iter < m_arguments.end()) {
+        QuadraticTask task {};
+        if (threeArgumentsAreValid(m_argumets_iter) &&
+            taskFromThreeArguments(&task, m_argumets_iter)) {
+            m_argumets_iter += QADRATIC_EQUATION_PARAMETERS_NUMBER;
+            return {task};
         }
+        std::cout << "ArgumentParser: dropping arguments pack: {" << *m_argumets_iter << " "
+                  << *(m_argumets_iter + 1) << " " << *(m_argumets_iter + 2) << "} \n";
+        m_argumets_iter += QADRATIC_EQUATION_PARAMETERS_NUMBER;
     }
-    return true;
+    return {std::nullopt};
 }
 
-bool ArgumentParser::task_from_three_strings(QuadraticTask *task, const ArgumentsIterator &iterator)
+bool ArgumentParser::taskFromThreeArguments(QuadraticTask *task, const ArgumentsIterator &iterator)
 {
-    return (ArgumentParser::int_from_string(&task->a, *iterator) &&
-            ArgumentParser::int_from_string(&task->b, *(iterator + 1)) &&
-            ArgumentParser::int_from_string(&task->c, *(iterator + 2)));
+    return (ArgumentParser::intFromString(&task->a, *iterator) &&
+            ArgumentParser::intFromString(&task->b, *(iterator + 1)) &&
+            ArgumentParser::intFromString(&task->c, *(iterator + 2)));
 }
 
-bool ArgumentParser::int_from_string(int *dst_int, const std::string &src_string)
+bool ArgumentParser::intFromString(int *dst_int, const std::string &src_string)
 {
     try {
         *dst_int = std::stoi(src_string);
@@ -48,26 +45,27 @@ bool ArgumentParser::int_from_string(int *dst_int, const std::string &src_string
     return true;
 }
 
-bool ArgumentParser::arguments_are_valid() const
+bool ArgumentParser::threeArgumentsAreValid(const ArgumentsIterator &iterator) const
 {
-    return arguments_number_is_valid() && arguments_types_are_valid();
+    return (ArgumentParser::argumentTypeIsValid(*iterator) &&
+            ArgumentParser::argumentTypeIsValid(*(iterator + 1)) &&
+            ArgumentParser::argumentTypeIsValid(*(iterator + 2)));
 }
 
-bool ArgumentParser::arguments_types_are_valid() const
+bool ArgumentParser::argumentTypeIsValid(const std::string &candidate_str) const
 {
-    const std::regex signed_int_regex {SIGNED_INT_REGEX_PATTERN};
+    static const std::regex signed_int_regex {SIGNED_INT_REGEX_PATTERN};
 
-    for (const auto &s : m_arguments) {
-        if (!std::regex_match(s, signed_int_regex)) {
-            std::cout << "ArgumentParser: parameter with incorrect type provided: {" << s << "}"
-                      << ", please, follow the regex: " << SIGNED_INT_REGEX_PATTERN << std::endl;
-            return false;
-        }
+    if (!std::regex_match(candidate_str, signed_int_regex)) {
+        std::cout << "ArgumentParser: parameter with incorrect type provided: {" << candidate_str
+                  << "}"
+                  << ", please, follow the regex: " << SIGNED_INT_REGEX_PATTERN << std::endl;
+        return false;
     }
     return true;
 }
 
-bool ArgumentParser::arguments_number_is_valid() const
+bool ArgumentParser::argumentsNumberIsValid() const
 {
     const auto args_number = m_arguments.size();
     if ((args_number == 0) or (args_number % QADRATIC_EQUATION_PARAMETERS_NUMBER != 0)) {
@@ -77,4 +75,3 @@ bool ArgumentParser::arguments_number_is_valid() const
     }
     return true;
 }
-

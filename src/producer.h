@@ -1,11 +1,13 @@
 #ifndef PRODUCER_H
 #define PRODUCER_H
 
+#include "argparse.h"
 #include "ipc.h"
 #include "task.h"
 
 #include <iostream>
 #include <mutex>
+#include <optional>
 #include <semaphore>
 #include <thread>
 #include <vector>
@@ -29,7 +31,7 @@ private:
 
 public:
     Producer(ipc_data_t<T> &ipc_cfg) : m_ipc_data(ipc_cfg) {};
-    void run(const std::vector<QuadraticTask> &tasks_source);
+    void run(ArgumentParser &argparse);
 };
 
 template <typename T>
@@ -43,13 +45,13 @@ void Producer<T>::halt()
 }
 
 template <typename T>
-void Producer<T>::run(const std::vector<QuadraticTask> &tasks_source)
+void Producer<T>::run(ArgumentParser &argparse)
 {
-    for (const auto &t : tasks_source) {
+    for (auto task = argparse.parseNext(); task != std::nullopt; task = argparse.parseNext()) {
         m_ipc_data.number_of_empty_elements.acquire();
         {
             std::lock_guard g(m_ipc_data.buffer_mutex);
-            m_ipc_data.buffer.emplace_back(t);
+            m_ipc_data.buffer.emplace_back(task.value());
         }
         m_ipc_data.number_of_queueing_elements.release();
     }

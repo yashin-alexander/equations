@@ -11,19 +11,18 @@
 int main(int argc, char **argv)
 {
     std::vector<std::string> arguments(argv + 1, argv + argc);
-    std::vector<QuadraticTask> tasks {};
     ArgumentParser parser {arguments};
-    if (!parser.parse(&tasks)) {
+    if (!parser.argumentsNumberIsValid()) {
         return -1;
     }
 
     // we have 1 main thread and 1 producer
     const unsigned int threads_number = get_threads_number() - 2;
-    std::cout << "Threads number: " << threads_number << '\n';
+    std::cout << "Consumer threads number: " << threads_number << '\n';
     ipc_data_t<QuadraticTask> ipc_data {threads_number};
 
     Producer producer {ipc_data};
-    std::thread p(&Producer<QuadraticTask>::run, &producer, std::ref(tasks));
+    std::thread p(&Producer<QuadraticTask>::run, &producer, std::ref(parser));
     p.detach();
 
     Consumer c {ipc_data};
