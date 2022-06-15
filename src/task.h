@@ -1,6 +1,8 @@
 #ifndef TASK_H
 #define TASK_H
 
+#include <tuple>
+
 struct Task {};
 
 struct LinearTask final : public Task {
@@ -16,6 +18,14 @@ struct QuadraticTask final : public Task {
     int c;
     QuadraticTask() = default;
     QuadraticTask(int a, int b, int c) : a(a), b(b), c(c) {};
+    bool operator<(const QuadraticTask &other) const
+    {
+        /*
+         * std::tie allows us to perform lexicographical comparison
+         * to a struct or to unpack a tuple
+         */
+        return std::tie(a, b, c) < std::tie(other.a, other.b, other.c);
+    };
 };
 
 struct TaskResults {};

@@ -9,7 +9,6 @@
 #include <semaphore>
 #include <sstream>
 #include <thread>
-#include <vector>
 
 /*
  * This code implements Dijkstra's solution of producer-consumer problem with
