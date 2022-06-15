@@ -36,11 +36,10 @@ def parse_results(results, equations_number):
             print(root1_test_result.format(s))
             print(root2_test_result.format(s))
             workers_counter += 1
-    assert(workers_counter == equations_number)
 
 if (__name__ == "__main__"):
     equations_number = int(sys.argv[1])
-    for multiplier in range(10):
+    for multiplier in range(25):
         cmd = "./build/equations"
         for _ in range(equations_number):
             cmd += generate_single_params_pack(-(2**multiplier), 2**multiplier)
