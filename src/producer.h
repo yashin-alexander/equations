@@ -9,8 +9,8 @@
 #include <mutex>
 #include <optional>
 #include <semaphore>
-#include <set>
 #include <sstream>
+#include <unordered_set>
 
 //@PURPOSE: Provide a producer realization for equation-solver app
 //
@@ -30,7 +30,7 @@ class Producer
 {
 private:
     ipc_data_t<T> &m_ipc_data;
-    std::set<T> solved_tasks;
+    std::unordered_set<T, QuadraticTaskHasher> solved_tasks;
     bool taskIsAlreadySolved(T &task);
     void halt();
 

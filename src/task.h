@@ -17,6 +17,8 @@
 // Results classes are able to hold root values with extremum where
 // possible.
 
+#include <functional>
+
 struct Task {};
 
 struct LinearTask final : public Task {
@@ -32,12 +34,22 @@ struct QuadraticTask final : public Task {
     int c;
     QuadraticTask() = default;
     QuadraticTask(int a, int b, int c) : a(a), b(b), c(c) {};
-    bool operator<(const QuadraticTask &other) const
+    bool operator==(const QuadraticTask &other) const
     {
         // std::tie allows us to perform lexicographical comparison
         // to a struct or to unpack a tuple
-        return std::tie(a, b, c) < std::tie(other.a, other.b, other.c);
+        return std::tie(a, b, c) == std::tie(other.a, other.b, other.c);
     };
+};
+
+struct QuadraticTaskHasher {
+    std::size_t operator()(const QuadraticTask &task) const
+    {
+        auto a_hash = std::hash<int>()(task.a);
+        auto b_hash = std::hash<int>()(task.b) << 1;
+        auto c_hash = std::hash<int>()(task.c) << 2;
+        return a_hash ^ b_hash ^ c_hash;
+    }
 };
 
 struct TaskResults {};
